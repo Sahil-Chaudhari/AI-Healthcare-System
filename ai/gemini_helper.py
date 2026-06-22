@@ -1,4 +1,6 @@
 from google import genai
+import streamlit as st
+import time
 from dotenv import load_dotenv
 import os
 
@@ -51,23 +53,31 @@ Use bullet points.
 def ask_health_assistant(question):
 
     prompt = f"""
-You are HealthAI Assistant.
+    You are an AI Healthcare Assistant.
 
-Rules:
-- Educational information only
-- Do not diagnose diseases
-- Do not prescribe medications
-- Recommend doctor consultation when appropriate
+    User Question:
+    {question}
 
-Question:
-{question}
+    Give educational healthcare guidance only.
+    """
 
-Provide a clear answer.
+    for _ in range(3):
+
+        try:
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+
+            return response.text
+
+        except Exception:
+
+            time.sleep(2)
+
+    return """
+⚠️ Unable to connect to Gemini AI.
+
+Please try again after a few minutes.
 """
-
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
-
-    return response.text
